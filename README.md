@@ -1,6 +1,8 @@
 # Dashjoin Music Store
 
-<img width="1263" height="777" alt="image" src="https://github.com/user-attachments/assets/785a0556-4e54-4e45-a3d6-f8f013d07ce5" />
+**▶ Live demo: [music.run.dashjoin.com](https://music.run.dashjoin.com/)**
+
+<a href="https://music.run.dashjoin.com/"><img width="1263" height="777" alt="Home page of the Dashjoin Music Store: animated hero banner with a spinning record, now playing album and counters, followed by revenue charts" src="https://github.com/user-attachments/assets/785a0556-4e54-4e45-a3d6-f8f013d07ce5" /></a>
 
 A small music store app built on the [Chinook](https://github.com/lerocha/chinook-database) sample database
 (`chinook.db`, SQLite). It shows off the Dashjoin Low Code Platform with as little configuration as possible:
