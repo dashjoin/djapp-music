@@ -1,0 +1,9 @@
+{
+    "ID": "album-wall",
+    "database": "dj/chinook",
+    "type": "read",
+    "roles": [
+        "authenticated"
+    ],
+    "query": "select al.AlbumId as id, al.Title as title, ar.Name as artist from Album al join Artist ar using(ArtistId) order by random() limit 48"
+}

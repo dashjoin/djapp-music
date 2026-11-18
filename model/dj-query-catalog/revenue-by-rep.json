@@ -1,0 +1,9 @@
+{
+    "ID": "revenue-by-rep",
+    "database": "dj/chinook",
+    "type": "read",
+    "roles": [
+        "authenticated"
+    ],
+    "query": "select e.FirstName || ' ' || e.LastName as rep, round(sum(i.Total),2) as revenue from Invoice i join Customer c using(CustomerId) join Employee e on e.EmployeeId = c.SupportRepId group by 1 order by 2 desc"
+}

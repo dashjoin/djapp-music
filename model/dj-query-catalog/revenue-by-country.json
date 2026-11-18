@@ -1,0 +1,19 @@
+{
+    "ID": "revenue-by-country",
+    "database": "dj/chinook",
+    "type": "read",
+    "roles": [
+        "authenticated"
+    ],
+    "query": "select i.BillingCountry as country, round(sum(l.UnitPrice*l.Quantity),2) as revenue from InvoiceLine l join Invoice i using(InvoiceId) join Track t using(TrackId) join Genre g using(GenreId) where (${year} is null or substr(i.InvoiceDate,1,4) = ${year}) and (${genre} is null or g.Name = ${genre}) group by 1 order by 2 desc",
+    "arguments": {
+        "year": {
+            "type": "string",
+            "sample": "2025"
+        },
+        "genre": {
+            "type": "string",
+            "sample": "Rock"
+        }
+    }
+}

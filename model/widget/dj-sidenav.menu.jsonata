@@ -1,0 +1,8 @@
+[
+  {"data": {"text": "Home", "icon": "home", "href": "/page/Home"}},
+  {"data": {"text": "Explore", "icon": "insights", "href": "/page/Explore"}},
+  {"data": {"text": "Catalog", "icon": "library_music", "href": "/page/Catalog"}},
+  {"data": {"text": "Playlists", "icon": "queue_music", "href": "/page/Playlists"}},
+  {"data": {"text": "Team", "icon": "groups", "href": "/page/Team"}},
+  {"data": {"text": "Data", "icon": "table_chart"}, "children": ["Artist", "Album", "Track", "Genre", "Customer", "Invoice", "Employee"].{"data": {"text": $ & "s", "icon": "chevron_right", "href": "/chinook/" & $}}}
+]

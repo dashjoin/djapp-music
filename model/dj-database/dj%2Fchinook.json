@@ -1,0 +1,213 @@
+{
+    "ID": "dj/chinook",
+    "name": "chinook",
+    "djClassName": "org.dashjoin.service.SQLDatabase",
+    "url": "jdbc:sqlite:chinook.db",
+    "readRoles": [
+        "authenticated"
+    ],
+    "tables": {
+        "Artist": {
+            "dj-label": "${Name}",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "markdown": "# \uD83C\uDFA4 ${context.Name}",
+                        "context": "value"
+                    },
+                    {
+                        "widget": "chart",
+                        "title": "Revenue per album",
+                        "chart": "bar",
+                        "size": 8,
+                        "database": "chinook",
+                        "query": "album-sales",
+                        "arguments": "{'artist': value.ArtistId}"
+                    },
+                    {
+                        "widget": "links",
+                        "size": 4
+                    }
+                ]
+            }
+        },
+        "Album": {
+            "dj-label": "${Title}",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "context": "{'title': value.Title, 'artist': $read('chinook', 'Artist', value.ArtistId)}",
+                        "markdown-pointer": "album-header.md"
+                    },
+                    {
+                        "widget": "display",
+                        "title": "Tracks",
+                        "size": 8,
+                        "display": "($len := $use('duration') ~> $eval; $all('chinook', 'Track', 0, 100, 'TrackId', false, {'AlbumId': value.AlbumId}).{'track': {'database': 'chinook', 'table': 'Track', 'pk1': TrackId}, 'length': $len(Milliseconds), 'price': '$' & UnitPrice})"
+                    },
+                    {
+                        "widget": "edit",
+                        "size": 4
+                    }
+                ]
+            }
+        },
+        "Track": {
+            "dj-label": "${Name}"
+        },
+        "Genre": {
+            "dj-label": "${Name}",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "markdown": "# \uD83C\uDFBC ${context}",
+                        "context": "value.Name"
+                    },
+                    {
+                        "widget": "chart",
+                        "title": "Top artists",
+                        "chart": "bar",
+                        "size": 8,
+                        "database": "chinook",
+                        "query": "top-artists",
+                        "arguments": "{'genre': value.Name}"
+                    },
+                    {
+                        "widget": "links",
+                        "size": 4
+                    }
+                ]
+            }
+        },
+        "MediaType": {
+            "dj-label": "${Name}"
+        },
+        "Playlist": {
+            "dj-label": "${Name}",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "markdown": "# \uD83C\uDFB6 ${context}",
+                        "context": "value.Name"
+                    },
+                    {
+                        "widget": "editRelated",
+                        "prop": "dj/chinook/PlaylistTrack/PlaylistId",
+                        "columns": [
+                            "TrackId"
+                        ]
+                    }
+                ]
+            },
+            "writeRoles": [
+                "manager",
+                "sales"
+            ]
+        },
+        "Customer": {
+            "dj-label": "${FirstName} ${LastName}",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "size": 6,
+                        "context": "value",
+                        "markdown-pointer": "customer-header.md"
+                    },
+                    {
+                        "widget": "map",
+                        "size": 6,
+                        "display": "[value.Address & ', ' & value.City & ', ' & value.Country]"
+                    },
+                    {
+                        "widget": "chart",
+                        "title": "Spend per year",
+                        "chart": "bar",
+                        "size": 8,
+                        "expression": "($i := $all('chinook', 'Invoice', 0, 1000, 'InvoiceDate', false, {'CustomerId': value.CustomerId}); $distinct($i.$substring(InvoiceDate, 0, 4)).($y := $; {'year': $y, 'spend': $sum($i[$substring(InvoiceDate, 0, 4) = $y].Total)}))"
+                    },
+                    {
+                        "widget": "button",
+                        "text": "Buy an album",
+                        "size": 4,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "album": {
+                                    "widget": "select",
+                                    "required": true,
+                                    "title": "Album",
+                                    "options": "$all('chinook', 'Album', 0, 1000, 'Title').{'value': AlbumId, 'name': Title}"
+                                }
+                            }
+                        },
+                        "print": "($inv := $create('chinook', 'Invoice', {'CustomerId': value.CustomerId}).pk[0]; $all('chinook', 'Track', 0, 100, null, false, {'AlbumId': form.album}).$create('chinook', 'InvoiceLine', {'InvoiceId': $inv, 'TrackId': TrackId}); $navigate('/chinook/Invoice/' & $inv))"
+                    },
+                    {
+                        "widget": "edit"
+                    },
+                    {
+                        "widget": "links"
+                    }
+                ]
+            }
+        },
+        "Employee": {
+            "dj-label": "${FirstName} ${LastName}"
+        },
+        "Invoice": {
+            "dj-label": "Invoice ${InvoiceId}",
+            "before-create-pointer": "invoice-before-create.jsonata",
+            "instanceLayout": {
+                "widget": "page",
+                "children": [
+                    {
+                        "widget": "markdown",
+                        "context": "{'i': value, 'c': $read('chinook', 'Customer', value.CustomerId)}",
+                        "markdown-pointer": "invoice-header.md"
+                    },
+                    {
+                        "widget": "editRelated",
+                        "prop": "dj/chinook/InvoiceLine/InvoiceId",
+                        "columns": [
+                            "TrackId",
+                            "UnitPrice",
+                            "Quantity"
+                        ]
+                    }
+                ]
+            },
+            "writeRoles": [
+                "manager",
+                "sales"
+            ]
+        },
+        "InvoiceLine": {
+            "dj-label": "Line ${InvoiceLineId}",
+            "after-create": "$update(\"chinook\", \"Invoice\", object.InvoiceId, {\"Total\": $sum($all(\"chinook\", \"InvoiceLine\", 0, 1000, null, false, {\"InvoiceId\": object.InvoiceId}).(UnitPrice * Quantity))})",
+            "before-create": "{\"setObject\": $merge([object, {\"UnitPrice\": $read(\"chinook\", \"Track\", object.TrackId).UnitPrice, \"Quantity\": object.Quantity ? object.Quantity : 1}])}",
+            "writeRoles": [
+                "manager",
+                "sales"
+            ]
+        },
+        "PlaylistTrack": {
+            "writeRoles": [
+                "manager",
+                "sales"
+            ]
+        }
+    },
+    "writeRoles": [
+        "manager"
+    ]
+}

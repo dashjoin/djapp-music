@@ -1,0 +1,59 @@
+{
+    "ID": "Home",
+    "layout": {
+        "widget": "page",
+        "children": [
+            {
+                "widget": "html",
+                "html-pointer": "hero.html"
+            },
+            {
+                "widget": "display",
+                "title": "Revenue",
+                "size": 6,
+                "display": "'$' & $formatNumber($query('chinook', 'kpis').revenue, '#,##0')"
+            },
+            {
+                "widget": "display",
+                "title": "Invoices",
+                "size": 6,
+                "display": "$query('chinook', 'kpis').invoices"
+            },
+            {
+                "widget": "chart",
+                "title": "Revenue per month",
+                "size": 8,
+                "chart": "line",
+                "database": "chinook",
+                "query": "revenue-by-month",
+                "arguments": "{}"
+            },
+            {
+                "widget": "chart",
+                "title": "Revenue per genre",
+                "size": 4,
+                "chart": "doughnut",
+                "database": "chinook",
+                "query": "revenue-by-genre",
+                "arguments": "{}",
+                "style": {
+                    "scales.x.display": "false",
+                    "scales.y.display": "false",
+                    "plugins.legend.position": "right"
+                }
+            },
+            {
+                "widget": "map",
+                "title": "Where our customers are",
+                "size": 7,
+                "display": "{'points': $query('chinook', 'revenue-by-country').{'address': `Invoice.country`, 'popup': `Invoice.country` & ': $' & revenue}}"
+            },
+            {
+                "widget": "display",
+                "title": "Top artists",
+                "size": 5,
+                "display": "$query('chinook', 'top-artists').{'artist': {'database': 'chinook', 'table': 'Artist', 'pk1': `Artist.id`}, 'revenue': '$' & revenue}"
+            }
+        ]
+    }
+}

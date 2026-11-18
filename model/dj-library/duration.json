@@ -1,0 +1,21 @@
+{
+    "ID": "duration",
+    "description": "formats milliseconds as m:ss",
+    "expression": "function($ms){ $string($floor($ms / 60000)) & \":\" & $pad($string($floor($ms / 1000) % 60), -2, \"0\") }",
+    "tests": [
+        {
+            "description": "track",
+            "parameters": [
+                343719
+            ],
+            "expected": "5:43"
+        },
+        {
+            "description": "short",
+            "parameters": [
+                5000
+            ],
+            "expected": "0:05"
+        }
+    ]
+}

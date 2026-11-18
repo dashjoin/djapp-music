@@ -1,0 +1,13 @@
+{
+  "$schema": "https://dashjoin.com/schema/app-manifest-v1.json",
+  "license": "Apache 2.0",
+  "name": "Dashjoin Music Store",
+  "categories": [
+    "Demo"
+  ],
+  "description": "Chinook music store demo showing the main widgets and features of the Dashjoin platform",
+  "author": "Dashjoin",
+  "website": "https://dashjoin.com",
+  "url": "https://github.com/dashjoin/djapp-music",
+  "email": "info@dashjoin.com"
+}

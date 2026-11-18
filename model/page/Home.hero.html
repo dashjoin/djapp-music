@@ -1,0 +1,91 @@
+<html>
+<head>
+  <style>
+    #hero { position: relative; overflow: hidden; border-radius: 20px; padding: 36px 40px; color: #fff;
+            display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
+            background: linear-gradient(120deg, #1e1b4b, #7c3aed, #db2777, #f59e0b, #1e1b4b);
+            background-size: 400% 400%; animation: hero-bg 14s ease infinite; box-shadow: 0 12px 40px rgba(124,58,237,.35); }
+    @keyframes hero-bg { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+    #hero-vinyl { width: 170px; height: 170px; border-radius: 50%; flex: none; animation: hero-spin 4s linear infinite;
+                  background: radial-gradient(circle, #fff 0 5px, var(--label, #db2777) 6px 42px, #111 43px),
+                              repeating-radial-gradient(circle, #111 0 2px, #222 3px 4px);
+                  background-blend-mode: normal; box-shadow: 0 0 0 6px rgba(255,255,255,.08), 0 10px 30px rgba(0,0,0,.5); }
+    @keyframes hero-spin { to { transform: rotate(360deg); } }
+
+    #hero h1 { margin: 0; font-size: 42px; font-weight: 800; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,.3); }
+    #hero-now { display: block; margin: 14px 0 22px; color: #fff; text-decoration: none; transition: opacity .4s; }
+    #hero-now small { text-transform: uppercase; letter-spacing: 3px; opacity: .7; font-size: 11px; }
+    #hero-title { font-size: 22px; font-weight: 700; } #hero-artist { opacity: .85; }
+
+    #hero-eq { display: flex; align-items: flex-end; gap: 4px; height: 40px; position: absolute; right: 40px; bottom: 36px; }
+    #hero-eq i { width: 7px; border-radius: 4px; background: rgba(255,255,255,.85); animation: hero-eq 1s ease-in-out infinite alternate; }
+    @keyframes hero-eq { from { height: 15%; } to { height: 100%; } }
+
+    #hero-stats { display: flex; gap: 32px; }
+    #hero-stats b { display: block; font-size: 30px; font-weight: 800; }
+    #hero-stats span { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: .75; }
+  </style>
+  <script>
+    // no JS template literals: Dashjoin uses the dollar-brace syntax for its own templating
+    (async () => {
+      const post = async url => (await fetch(url, { method: "POST", body: "{}",
+        headers: { "Authorization": localStorage.getItem("auth-token"), "Content-Type": "application/json" } })).json();
+
+      // equalizer bars with random speeds
+      const eq = document.getElementById("hero-eq");
+      for (let i = 0; i < 12; i++) {
+        const bar = document.createElement("i");
+        bar.style.animationDuration = (0.4 + Math.random() * 0.8) + "s";
+        eq.appendChild(bar);
+      }
+
+      // count up the numbers
+      const kpi = (await post("/rest/database/query/chinook/kpis"))[0];
+      document.querySelectorAll("#hero-stats b").forEach(el => {
+        const target = kpi[el.dataset.key], t0 = performance.now();
+        const step = now => {
+          const p = Math.min((now - t0) / 1500, 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString();
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+
+      // cycle through random albums as "now playing"
+      const albums = await post("/rest/database/query/chinook/album-wall");
+      const now = document.getElementById("hero-now"), vinyl = document.getElementById("hero-vinyl");
+      let i = 0;
+      const show = () => {
+        const a = albums[i++ % albums.length];
+        now.style.opacity = 0;
+        setTimeout(() => {
+          document.getElementById("hero-title").textContent = a["Album.title"];
+          document.getElementById("hero-artist").textContent = a["Artist.artist"];
+          now.href = "#/chinook/Album/" + a["Album.id"];
+          vinyl.style.setProperty("--label", "hsl(" + (a["Album.id"] * 47 % 360) + ",80%,55%)");
+          now.style.opacity = 1;
+        }, 400);
+      };
+      show();
+      setInterval(() => { if (document.getElementById("hero")) show(); }, 3500);
+    })();
+  </script>
+</head>
+<body>
+  <div id="hero">
+    <div id="hero-vinyl"></div>
+    <div>
+      <h1>🎧 Chinook Music Store</h1>
+      <a id="hero-now" href="#"><small>Now playing</small><br><span id="hero-title">…</span> · <span id="hero-artist"></span></a>
+      <div id="hero-stats">
+        <div><b data-key="tracks">0</b><span>Tracks</span></div>
+        <div><b data-key="artists">0</b><span>Artists</span></div>
+        <div><b data-key="countries">0</b><span>Countries</span></div>
+        <div><b data-key="customers">0</b><span>Fans</span></div>
+      </div>
+    </div>
+    <div id="hero-eq"></div>
+  </div>
+</body>
+</html>

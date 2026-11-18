@@ -1,0 +1,8 @@
+($e := $all('chinook', 'Employee');
+ $level := function($x){ $x.ReportsTo ? 1 + $level($e[EmployeeId = $x.ReportsTo]) : 0 };
+ $l := $e.{'id': EmployeeId, 'level': $level($)};
+ $e.($id := EmployeeId; $lv := $l[id = $id].level; {
+   'database': 'chinook', 'table': 'Employee', 'id': $id,
+   'data': {'label': FirstName & ' ' & LastName & ' · ' & Title},
+   'position': {'x': 200 * $count($l[level = $lv and id < $id]), 'y': 120 * $lv}
+ }))

@@ -1,0 +1,9 @@
+{
+    "ID": "kpis",
+    "database": "dj/chinook",
+    "type": "read",
+    "roles": [
+        "authenticated"
+    ],
+    "query": "select (select count(*) from Track) as tracks, (select count(*) from Artist) as artists, (select count(*) from Customer) as customers, (select count(distinct Country) from Customer) as countries, (select count(*) from Invoice) as invoices, (select round(sum(Total)) from Invoice) as revenue"
+}

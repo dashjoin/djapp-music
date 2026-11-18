@@ -1,0 +1,77 @@
+{
+    "ID": "Explore",
+    "layout": {
+        "widget": "page",
+        "children": [
+            {
+                "widget": "variable",
+                "title": "Filter",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "genre": {
+                            "widget": "select",
+                            "title": "Genre",
+                            "options": "$all('chinook', 'Genre', 0, 100, 'Name').Name"
+                        },
+                        "year": {
+                            "widget": "select",
+                            "title": "Year",
+                            "options": "['2021', '2022', '2023', '2024', '2025']"
+                        }
+                    }
+                }
+            },
+            {
+                "widget": "chart",
+                "title": "Revenue per month",
+                "size": 6,
+                "chart": "line",
+                "expression": "$query('chinook', 'revenue-by-month', variable)"
+            },
+            {
+                "widget": "chart",
+                "title": "Revenue per country",
+                "size": 6,
+                "chart": "bar",
+                "expression": "$query('chinook', 'revenue-by-country', variable)"
+            },
+            {
+                "widget": "table",
+                "title": "Top artists",
+                "size": 6,
+                "expression": "$query('chinook', 'top-artists', variable).{'artist': `Artist.artist`, 'revenue': revenue}"
+            },
+            {
+                "widget": "analytics",
+                "title": "Build your own report",
+                "size": 6,
+                "database": "chinook",
+                "table": "Invoice",
+                "chart": "bar",
+                "columns": [
+                    {
+                        "name": "BillingCountry",
+                        "aggregation": "GROUP_BY"
+                    },
+                    {
+                        "name": "Total",
+                        "aggregation": "SUM"
+                    }
+                ],
+                "filter": [
+                    {
+                        "name": "InvoiceDate",
+                        "operator": ">=",
+                        "input": "date"
+                    },
+                    {
+                        "name": "BillingCountry",
+                        "operator": "=",
+                        "input": "text"
+                    }
+                ]
+            }
+        ]
+    }
+}

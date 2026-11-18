@@ -1,0 +1,3 @@
+($c := $read("chinook", "Customer", object.CustomerId);
+{"setObject": $merge([object, {"InvoiceDate": $substring($now(), 0, 10), "Total": 0, "BillingAddress": $c.Address,
+  "BillingCity": $c.City, "BillingState": $c.State, "BillingCountry": $c.Country, "BillingPostalCode": $c.PostalCode}])})

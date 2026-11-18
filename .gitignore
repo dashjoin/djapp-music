@@ -1,0 +1,9 @@
+djroles.properties
+djusers.properties
+.env*
+.agents/
+.claude/skills
+AGENTS.md
+CLAUDE.md
+model/user/admin%40localhost.json
+model/user/

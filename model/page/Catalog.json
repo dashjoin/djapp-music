@@ -1,0 +1,33 @@
+{
+    "ID": "Catalog",
+    "layout": {
+        "widget": "page",
+        "children": [
+            {
+                "widget": "tabs",
+                "children": [
+                    {
+                        "widget": "datagrid",
+                        "title": "Tracks (editable)",
+                        "idColumn": "TrackId",
+                        "expression": "$all('chinook', 'Track', 0, 500, 'TrackId').{'TrackId': TrackId, 'Name': Name, 'Composer': Composer, 'UnitPrice': UnitPrice}",
+                        "onchange": "$update('chinook', 'Track', id, updatedRow)"
+                    },
+                    {
+                        "widget": "actionTable",
+                        "title": "Albums",
+                        "expression": "$all('chinook', 'Album', 0, 1000, 'Title')",
+                        "properties": {
+                            "Make a playlist": "($p := $create('chinook', 'Playlist', {'Name': 'Mix of ' & $join(selected.Title, ', ')}).pk[0]; selected.AlbumId.$all('chinook', 'Track', 0, 100, null, false, {'AlbumId': $}).$create('chinook', 'PlaylistTrack', {'PlaylistId': $p, 'TrackId': TrackId}); $navigate('/chinook/Playlist/' & $p))"
+                        }
+                    },
+                    {
+                        "widget": "html",
+                        "title": "Album wall",
+                        "html-pointer": "album-wall.html"
+                    }
+                ]
+            }
+        ]
+    }
+}

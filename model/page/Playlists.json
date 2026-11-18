@@ -1,0 +1,58 @@
+{
+    "ID": "Playlists",
+    "layout": {
+        "widget": "page",
+        "children": [
+            {
+                "widget": "stepper",
+                "size": 6,
+                "children": [
+                    {
+                        "widget": "button",
+                        "title": "Name it",
+                        "text": "Next",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "widget": "string",
+                                    "title": "Playlist name",
+                                    "required": true
+                                }
+                            }
+                        },
+                        "print": "($setVariable('playlist', $create('chinook', 'Playlist', {'Name': form.name}).pk[0]); $stepForward())"
+                    },
+                    {
+                        "widget": "button",
+                        "title": "Pick albums",
+                        "text": "Add tracks",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "albums": {
+                                    "widget": "multi select",
+                                    "title": "Albums",
+                                    "required": true,
+                                    "options": "$all('chinook', 'Album', 0, 1000, 'Title').{'value': AlbumId, 'name': Title}"
+                                }
+                            }
+                        },
+                        "print": "(form.albums.$all('chinook', 'Track', 0, 100, null, false, {'AlbumId': $}).$create('chinook', 'PlaylistTrack', {'PlaylistId': $getVariable('playlist'), 'TrackId': TrackId}); $stepForward())"
+                    },
+                    {
+                        "widget": "display",
+                        "title": "Enjoy",
+                        "display": "{'database': 'chinook', 'table': 'Playlist', 'pk1': variable.playlist}"
+                    }
+                ]
+            },
+            {
+                "widget": "display",
+                "title": "Playlists",
+                "size": 6,
+                "display": "$all('chinook', 'Playlist', 0, 100, 'PlaylistId', true).{'playlist': {'database': 'chinook', 'table': 'Playlist', 'pk1': PlaylistId}}"
+            }
+        ]
+    }
+}

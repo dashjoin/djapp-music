@@ -1,0 +1,15 @@
+{
+    "ID": "album-sales",
+    "database": "dj/chinook",
+    "type": "read",
+    "roles": [
+        "authenticated"
+    ],
+    "arguments": {
+        "artist": {
+            "type": "number",
+            "sample": "22"
+        }
+    },
+    "query": "select al.Title as album, coalesce(round(sum(l.UnitPrice*l.Quantity),2),0) as revenue from Album al join Track t using(AlbumId) left join InvoiceLine l using(TrackId) where al.ArtistId = ${artist} group by al.AlbumId order by 2 desc"
+}
